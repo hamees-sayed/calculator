@@ -33,8 +33,6 @@ body {
     text-align: right;
 }
 
-
-
 .btn {
     font-family: 'Inter', sans-serif;
     font-weight: 400;
@@ -60,5 +58,16 @@ body {
 
 .first-row #pi {
     background-color: #AAAAFF;
+}
+
+.footer {
+    position: absolute;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    bottom: 0px;
+}
+
+.footer a {
+    text-decoration: none;
 }
 
