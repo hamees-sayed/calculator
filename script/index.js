@@ -1,10 +1,20 @@
 const pi = document.querySelector('#pi');
 const display = document.querySelector('.display .screen');
 const clear = document.querySelector('#clear');
+const numberKey = document.querySelectorAll('[data-key]');
+const operatorKey = document.querySelectorAll('[data-operator]');
 
-pi.addEventListener('click', displayPi)
-clear.addEventListener('click', clearDisplay)
-window.addEventListener('keydown', handleKeyboardInput)
+pi.addEventListener('click', displayPi);
+clear.addEventListener('click', clearDisplay);
+window.addEventListener('keydown', handleKeyboardInput);
+
+numberKey.forEach((button) => 
+    button.addEventListener('click', () => appendNumber(button.textContent))
+);
+
+operatorKey.forEach((operator) => 
+    operator.addEventListener('click', () => appendNumber(operator.textContent))
+);
 
 function displayPi() {
     return display.textContent = 3.141592
@@ -19,7 +29,7 @@ function resetScreen() {
 }
 
 function appendNumber(number) {
-    if (display.textContent === '0') resetScreen()
+    if (display.textContent === '0') resetScreen();
     display.textContent += number
 }
 
