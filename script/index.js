@@ -7,7 +7,7 @@ const numberButtons = document.querySelectorAll('[data-number]')
 const operatorButtons = document.querySelectorAll('[data-operator]')
 const equalsButton = document.getElementById('equalsBtn')
 const clearButton = document.getElementById('clearBtn')
-const deleteButton = document.getElementById('deleteBtn')
+const piButton = document.getElementById('piBtn')
 const pointButton = document.getElementById('pointBtn')
 const lastOperationScreen = document.getElementById('lastOperationScreen')
 const currentOperationScreen = document.getElementById('currentOperationScreen')
@@ -15,7 +15,7 @@ const currentOperationScreen = document.getElementById('currentOperationScreen')
 window.addEventListener('keydown', handleKeyboardInput)
 equalsButton.addEventListener('click', evaluate)
 clearButton.addEventListener('click', clear)
-deleteButton.addEventListener('click', deleteNumber)
+piButton.addEventListener('click', piNumber)
 pointButton.addEventListener('click', appendPoint)
 
 numberButtons.forEach((button) =>
@@ -53,10 +53,9 @@ function appendPoint() {
   currentOperationScreen.textContent += '.'
 }
 
-function deleteNumber() {
-  currentOperationScreen.textContent = currentOperationScreen.textContent
-    .toString()
-    .slice(0, -1)
+function piNumber() {
+    currentOperationScreen.textContent = 3.14159265359 
+    lastOperationScreen.textContent = 'pi'
 }
 
 function setOperation(operator) {
@@ -89,8 +88,8 @@ function handleKeyboardInput(e) {
   if (e.key >= 0 && e.key <= 9) appendNumber(e.key)
   if (e.key === '.') appendPoint()
   if (e.key === '=' || e.key === 'Enter') evaluate()
-  if (e.key === 'Backspace') deleteNumber()
-  if (e.key === 'Escape') clear()
+  if (e.key === 'p') piNumber()
+  if (e.key === 'Backspace') clear()
   if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/')
     setOperation(convertOperator(e.key))
 }
