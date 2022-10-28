@@ -1,3 +1,7 @@
+let firstOperand = ''
+let secondOperand = ''
+let currentOperation = null
+
 const pi = document.querySelector('#pi');
 const display = document.querySelector('.display .screen');
 const clear = document.querySelector('#clear');
@@ -28,22 +32,44 @@ function resetScreen() {
     return display.textContent = ''
 }
 
+function roundResult(number) {
+    return Math.round(number * 1000) / 1000
+}
+
 function appendNumber(number) {
     if (display.textContent === '0') resetScreen();
     display.textContent += number
+}
+
+function setOperation(operator) {
+    if (currentOperation !== null) evaluate()
+    firstOperand = currentOperationScreen.textContent
+    currentOperation = operator
+    lastOperationScreen.textContent = `${firstOperand} ${currentOperation}`
 }
 
 function handleKeyboardInput(e) {
     if (e.key >= 0 && e.key <= 9) appendNumber(e.key);
     if (e.key === '.') appendNumber(e.key);
 
-    // check here!!!
-    // if (e.key === '=' || e.key === 'Enter') evaluate()
+    if (e.key === '=' || e.key === 'Enter') operate()
 
     if (e.key === 'Backspace') clearDisplay();
     if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') 
-        display.textContent += convertKeyBoardOperator(e.key);
+        setOperation(convertOperator(e.key));
     if (!e.key) return;
+}
+
+function evaluate() {
+    if (display.textContent === '0' && currentOperation === '÷') {
+        return alert("Cannot divide by 0")
+    }
+    secondOperand = display.textContent
+    display.textContent = roundResult(
+    operate(currentOperation, firstOperand, secondOperand)
+    )
+    display.textContent = `${firstOperand} ${currentOperation} ${secondOperand} =`
+    currentOperation = null
 }
 
 function convertKeyBoardOperator(keyBoardOperator) {
