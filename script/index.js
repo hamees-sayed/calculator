@@ -1,115 +1,137 @@
 let firstOperand = ''
 let secondOperand = ''
 let currentOperation = null
+let shouldResetScreen = false
 
-const pi = document.querySelector('#pi');
-const display = document.querySelector('.display .screen');
-const clear = document.querySelector('#clear');
-const numberKey = document.querySelectorAll('[data-key]');
-const operatorKey = document.querySelectorAll('[data-operator]');
+const numberButtons = document.querySelectorAll('[data-number]')
+const operatorButtons = document.querySelectorAll('[data-operator]')
+const equalsButton = document.getElementById('equalsBtn')
+const clearButton = document.getElementById('clearBtn')
+const deleteButton = document.getElementById('deleteBtn')
+const pointButton = document.getElementById('pointBtn')
+const lastOperationScreen = document.getElementById('lastOperationScreen')
+const currentOperationScreen = document.getElementById('currentOperationScreen')
 
-pi.addEventListener('click', displayPi);
-clear.addEventListener('click', clearDisplay);
-window.addEventListener('keydown', handleKeyboardInput);
+window.addEventListener('keydown', handleKeyboardInput)
+equalsButton.addEventListener('click', evaluate)
+clearButton.addEventListener('click', clear)
+deleteButton.addEventListener('click', deleteNumber)
+pointButton.addEventListener('click', appendPoint)
 
-numberKey.forEach((button) => 
-    button.addEventListener('click', () => appendNumber(button.textContent))
-);
+numberButtons.forEach((button) =>
+  button.addEventListener('click', () => appendNumber(button.textContent))
+)
 
-operatorKey.forEach((operator) => 
-    operator.addEventListener('click', () => appendNumber(operator.textContent))
-);
+operatorButtons.forEach((button) =>
+  button.addEventListener('click', () => setOperation(button.textContent))
+)
 
-function displayPi() {
-    return display.textContent = 3.141592
-}
-
-function clearDisplay() {
-    return display.textContent = 0
+function appendNumber(number) {
+  if (currentOperationScreen.textContent === '0' || shouldResetScreen)
+    resetScreen()
+  currentOperationScreen.textContent += number
 }
 
 function resetScreen() {
-    return display.textContent = ''
+  currentOperationScreen.textContent = ''
+  shouldResetScreen = false
 }
 
-function roundResult(number) {
-    return Math.round(number * 1000) / 1000
+function clear() {
+  currentOperationScreen.textContent = '0'
+  lastOperationScreen.textContent = ''
+  firstOperand = ''
+  secondOperand = ''
+  currentOperation = null
 }
 
-function appendNumber(number) {
-    if (display.textContent === '0') resetScreen();
-    display.textContent += number
+function appendPoint() {
+  if (shouldResetScreen) resetScreen()
+  if (currentOperationScreen.textContent === '')
+    currentOperationScreen.textContent = '0'
+  if (currentOperationScreen.textContent.includes('.')) return
+  currentOperationScreen.textContent += '.'
+}
+
+function deleteNumber() {
+  currentOperationScreen.textContent = currentOperationScreen.textContent
+    .toString()
+    .slice(0, -1)
 }
 
 function setOperation(operator) {
-    if (currentOperation !== null) evaluate()
-    firstOperand = currentOperationScreen.textContent
-    currentOperation = operator
-    lastOperationScreen.textContent = `${firstOperand} ${currentOperation}`
-}
-
-function handleKeyboardInput(e) {
-    if (e.key >= 0 && e.key <= 9) appendNumber(e.key);
-    if (e.key === '.') appendNumber(e.key);
-
-    if (e.key === '=' || e.key === 'Enter') operate()
-
-    if (e.key === 'Backspace') clearDisplay();
-    if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') 
-        setOperation(convertOperator(e.key));
-    if (!e.key) return;
+  if (currentOperation !== null) evaluate()
+  firstOperand = currentOperationScreen.textContent
+  currentOperation = operator
+  lastOperationScreen.textContent = `${firstOperand} ${currentOperation}`
+  shouldResetScreen = true
 }
 
 function evaluate() {
-    if (display.textContent === '0' && currentOperation === '÷') {
-        return alert("Cannot divide by 0")
-    }
-    secondOperand = display.textContent
-    display.textContent = roundResult(
+  if (currentOperation === null || shouldResetScreen) return
+  if (currentOperation === '÷' && currentOperationScreen.textContent === '0') {
+    alert("You can't divide by 0!")
+    return
+  }
+  secondOperand = currentOperationScreen.textContent
+  currentOperationScreen.textContent = roundResult(
     operate(currentOperation, firstOperand, secondOperand)
-    )
-    display.textContent = `${firstOperand} ${currentOperation} ${secondOperand} =`
-    currentOperation = null
+  )
+  lastOperationScreen.textContent = `${firstOperand} ${currentOperation} ${secondOperand} =`
+  currentOperation = null
 }
 
-function convertKeyBoardOperator(keyBoardOperator) {
-    if (keyBoardOperator === '/') return '÷'
-    if (keyBoardOperator === '+') return '+'
-    if (keyBoardOperator === '-') return '−'
-    if (keyBoardOperator === '*') return '×'
+function roundResult(number) {
+  return Math.round(number * 1000) / 1000
+}
+
+function handleKeyboardInput(e) {
+  if (e.key >= 0 && e.key <= 9) appendNumber(e.key)
+  if (e.key === '.') appendPoint()
+  if (e.key === '=' || e.key === 'Enter') evaluate()
+  if (e.key === 'Backspace') deleteNumber()
+  if (e.key === 'Escape') clear()
+  if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/')
+    setOperation(convertOperator(e.key))
+}
+
+function convertOperator(keyboardOperator) {
+  if (keyboardOperator === '/') return '÷'
+  if (keyboardOperator === '*') return '×'
+  if (keyboardOperator === '-') return '−'
+  if (keyboardOperator === '+') return '+'
 }
 
 function add(a, b) {
-    return a + b;
+  return a + b
+}
+
+function substract(a, b) {
+  return a - b
 }
 
 function multiply(a, b) {
-    return a * b;
-}
-
-function subtract(a ,b) {
-    return a - b;
+  return a * b
 }
 
 function divide(a, b) {
-    return a / b;
+  return a / b
 }
 
 function operate(operator, a, b) {
-    a = Number(a);
-    b = Number(b);
-
-    switch (operator) {
-        case '+':
-            return add(a, b)
-        case '-':
-            return subtract(a, b)
-        case '*':
-            return multiply(a, b)
-        case '/':
-            if (b === 0) return null
-            else return divide(a, b)
-        default: 
-            return null
-    }
+  a = Number(a)
+  b = Number(b)
+  switch (operator) {
+    case '+':
+      return add(a, b)
+    case '−':
+      return substract(a, b)
+    case '×':
+      return multiply(a, b)
+    case '÷':
+      if (b === 0) return null
+      else return divide(a, b)
+    default:
+      return null
+  }
 }
